@@ -16,6 +16,7 @@ import threading
 # -------------------
 load_dotenv()
 BOT_TOKEN = os.getenv("DISCORD_BOT_TOKEN")
+KOYEB_URL = os.getenv("KOYEP_URL")
 CHANNEL_ID = None
 
 intents = discord.Intents.default()

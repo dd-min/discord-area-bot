@@ -16,7 +16,8 @@ import threading
 # -------------------
 load_dotenv()
 BOT_TOKEN = os.getenv("DISCORD_BOT_TOKEN")
-KOYEB_URL = os.getenv("KOYEP_URL")
+KOYEB_URL = os.getenv("KOYEB_URL")
+print("KOYEB_URL:", KOYEB_URL, type(KOYEB_URL))
 CHANNEL_ID = None
 
 intents = discord.Intents.default()
@@ -53,12 +54,18 @@ threading.Thread(target=run_flask).start()
 async def ping_self():
     await bot.wait_until_ready()
     while not bot.is_closed():
+        url = os.getenv("KOYEB_URL")
+        if not url:
+            print("KOYEB_URL not set, ping skipped")
+            await asyncio.sleep(180)
+            continue
         try:
             async with aiohttp.ClientSession() as session:
-                await session.get(KOYEB_URL)
+                async with session.get(url) as resp:
+                    print("Ping successful:", resp.status)
         except Exception as e:
             print("Ping failed:", e)
-        await asyncio.sleep(180)  # 3분마다 ping
+        await asyncio.sleep(180)
 
 
 # -------------------

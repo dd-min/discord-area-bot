@@ -435,7 +435,7 @@ async def weekly_oracle_task():
         return
 
    # 목요일 오전 10시 ~ 10시 10분
-    if now.weekday() == 3 and now.hour == 10 and 0 <= now.minute < 10:
+    if now.weekday() == 3 and now.hour == 10 and 0 <= now.minute < 15:
         # 이미 오늘 실행됐는지 체크
         if hasattr(weekly_oracle_task, "last_run_date"):
             if weekly_oracle_task.last_run_date == now.date():

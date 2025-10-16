@@ -383,7 +383,7 @@ async def hard_reset_cmd(interaction: discord.Interaction):
         return
 
     # ⏳ 작업 시간 확보
-    # await interaction.response.defer()  # ephemeral 제거 (공개 처리)
+    await interaction.response.defer(ephemeral=True)  # ephemeral 제거 (공개 처리)
     await asyncio.sleep(0.3)
 
     msg = game.hard_reset()
@@ -400,7 +400,7 @@ async def set_channel(interaction: discord.Interaction, channel: discord.TextCha
         return
 
     # ⏳ 즉시 응답 (타임아웃 방지)
-    # await interaction.response.defer(ephemeral=True)
+    await interaction.response.defer(ephemeral=True)
     await asyncio.sleep(0.3)
 
     CHANNEL_ID = channel.id

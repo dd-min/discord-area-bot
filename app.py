@@ -410,7 +410,7 @@ async def set_channel(interaction: discord.Interaction, channel: discord.TextCha
     CHANNEL_ID = channel.id
     await interaction.followup.send(f"✅ 오라클 메시지 채널이 **{channel.name}**로 설정되었습니다.", ephemeral=True)
 
-@tree.command(name="일반 채널등록", description="일반 봇 메시지를 보낼 채널 지정")
+@tree.command(name="일반채널등록", description="일반 봇 메시지를 보낼 채널 지정")
 async def set_other_channel(interaction: discord.Interaction, channel: discord.TextChannel):
     global OTHER_CHANNEL_ID
     if not is_admin(interaction):
@@ -435,7 +435,7 @@ async def weekly_oracle_task():
         return
 
    # 목요일 오전 10시 ~ 10시 10분
-    if now.weekday() == 3 and now.hour == 10 and 0 <= now.minute < 15:
+    if now.weekday() == 3 and now.hour == 10 and 0 <= now.minute < 25:
         # 이미 오늘 실행됐는지 체크
         if hasattr(weekly_oracle_task, "last_run_date"):
             if weekly_oracle_task.last_run_date == now.date():

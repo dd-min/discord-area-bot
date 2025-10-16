@@ -5,7 +5,7 @@ import asyncio
 from discord.ext import tasks
 from discord import app_commands
 from dotenv import load_dotenv
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import random
 from flask import Flask
 import threading
@@ -205,7 +205,8 @@ class OracleGame:
             user["can_sacred"] = False
             
 
-        month, week = get_year_week(datetime.now())
+        now = datetime.now(timezone.utc) + timedelta(hours=9)  # KST 변환
+        month, week = get_year_week(now)
         msg = f"📅 {month}월 {week}주차 당첨 오라클\n- **{self.current_oracle}**"
         return msg
 
@@ -214,7 +215,8 @@ class OracleGame:
     # -------------------
     def can_draw(self, user_id, draw_type):
         self._init_user(user_id)
-        today = datetime.now().date()
+        now = datetime.now(timezone.utc) + timedelta(hours=9)  # KST 변환
+        today = now.date()
         user = self.user_data[user_id]
         
 
@@ -234,7 +236,8 @@ class OracleGame:
     def draw_oracle(self, user_id, nickname, draw_type="normal"):
         self._init_user(user_id)
         user = self.user_data[user_id]
-        today = datetime.now().date()
+        now = datetime.now(timezone.utc) + timedelta(hours=9)  # KST 변환
+        today = now.date()
 
         # 오라클이 아직 생성되지 않은 경우 (예: 목요일 이전, 봇 처음 추가)
         if self.current_oracle is None:
@@ -297,7 +300,8 @@ class OracleGame:
     # 결산
     # -------------------
     def summary(self):
-        month, week = get_year_week(datetime.now())
+        now = datetime.now(timezone.utc) + timedelta(hours=9)  # KST 변환
+        month, week = get_year_week(now)
         lines = [f"📅 {month}월 {week}주차 오라클\n- **{self.current_oracle}**", "\n**참여정보 결산**"]
         for uid, data in self.user_data.items():
             attempts = data.get("attempts", 0)
@@ -426,7 +430,7 @@ async def set_other_channel(interaction: discord.Interaction, channel: discord.T
 # -------------------
 @tasks.loop(seconds=10)  # 10초마다 체크
 async def weekly_oracle_task():
-    now = datetime.now()
+    now = datetime.now(timezone.utc) + timedelta(hours=9)  # KST 변환
     if CHANNEL_ID is None:
         return
 

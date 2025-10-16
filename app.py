@@ -121,6 +121,7 @@ class OracleGame:
         self.week_index = 0
         self.winner_found = False
         self.user_data = {}  # user_id -> dict
+        
 
     # 유저 초기화
     def _init_user(self, user_id):
@@ -201,6 +202,7 @@ class OracleGame:
             user["sacred_used"] = 0
             user["reward"] = 0
             user["can_sacred"] = False
+            
 
         month, week = get_year_week(datetime.now())
         msg = f"📅 {month}월 {week}주차 당첨 오라클\n- **{self.current_oracle}**"
@@ -213,6 +215,7 @@ class OracleGame:
         self._init_user(user_id)
         today = datetime.now().date()
         user = self.user_data[user_id]
+        
 
         if draw_type in ["normal", "boost"]:
             if user["last_draw_date"] == today:
@@ -232,16 +235,26 @@ class OracleGame:
         user = self.user_data[user_id]
         today = datetime.now().date()
 
+        # 오라클이 아직 생성되지 않은 경우 (예: 목요일 이전, 봇 처음 추가)
+        if self.current_oracle is None:
+            return None, None, "⚠️ 아직 이번 주 오라클이 설정되지 않았습니다.\n문제가 있는 경우 관리자에 문의하세요."
+
         # --------------------
         # 주차 게임 종료 여부 체크
         # --------------------
         if self.winner_found:
             return None, None, "⚠️ 이번 주 오라클 게임은 이미 종료되었습니다."
-
+        
+        # --------------------
+        # 일반 조건 검사
+        # --------------------
         can, msg = self.can_draw(user_id, draw_type)
         if not can:
             return None, None, msg
 
+        # --------------------
+        # 실제 뽑기 로직
+        # --------------------
         pool = list(ORACLE_EFFECTS.keys())
         if draw_type == "boost":
             pool.append(self.current_oracle)

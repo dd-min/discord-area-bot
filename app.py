@@ -373,7 +373,7 @@ async def summary_cmd(interaction: discord.Interaction):
     await asyncio.sleep(0.3)
 
     msg = game.summary()
-    await interaction.followup.send(msg, ephemeral=True)
+    await interaction.followup.send(msg)
 
 
 @tree.command(name="하드리셋", description="이번주 오라클 초기화 및 새 오라클 생성")
@@ -382,12 +382,14 @@ async def hard_reset_cmd(interaction: discord.Interaction):
         await interaction.response.send_message("⚠️ 관리자 권한이 필요합니다.", ephemeral=True)
         return
 
-    # ⏳ 즉시 응답 (타임아웃 방지)
-    await interaction.response.defer(ephemeral=True)
+    # ⏳ 작업 시간 확보
+    await interaction.response.defer()  # ephemeral 제거 (공개 처리)
     await asyncio.sleep(0.3)
 
     msg = game.hard_reset()
-    await interaction.response.send_message(msg)
+
+    # ✅ 모든 사람이 볼 수 있게 일반 채팅으로 출력
+    await interaction.followup.send(msg)
 
 
 @tree.command(name="채널등록", description="오라클 메시지를 보낼 채널 지정")

@@ -432,13 +432,15 @@ async def set_other_channel(interaction: discord.Interaction, channel: discord.T
 async def weekly_oracle_task():
     now = datetime.now(timezone.utc) + timedelta(hours=9)  # KST 변환
     if CHANNEL_ID is None:
+        
         return
 
    # 목요일 오전 10시 ~ 10시 10분
-    if now.weekday() == 3 and now.hour == 10 and 0 <= now.minute < 25:
+    if now.weekday() == 3 and now.hour == 10 and 0 <= now.minute < 35:
         # 이미 오늘 실행됐는지 체크
         if hasattr(weekly_oracle_task, "last_run_date"):
             if weekly_oracle_task.last_run_date == now.date():
+                print("Already Created", weekly_oracle_task.last_run_date)
                 return  # 오늘 이미 실행됨
 
         weekly_oracle_task.last_run_date = now.date()

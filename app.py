@@ -387,7 +387,7 @@ async def hard_reset_cmd(interaction: discord.Interaction):
     await asyncio.sleep(0.3)
 
     msg = game.hard_reset()
-    await interaction.response.send_messsage(msg)
+    await interaction.response.send_message(msg)
 
 
 @tree.command(name="채널등록", description="오라클 메시지를 보낼 채널 지정")

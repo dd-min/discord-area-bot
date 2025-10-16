@@ -20,11 +20,6 @@ KOYEB_URL = os.getenv("KOYEB_URL")
 print("KOYEB_URL:", KOYEB_URL, type(KOYEB_URL))
 CHANNEL_ID = None
 
-intents = discord.Intents.default()
-intents.message_content = True
-bot = discord.Client(intents=intents)
-tree = app_commands.CommandTree(bot)
-
 # -------------------
 # Discord 봇 세팅
 # -------------------

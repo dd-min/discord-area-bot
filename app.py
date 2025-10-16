@@ -42,7 +42,7 @@ app = Flask(__name__)
 def home():
     return "OK", 200
 def run_flask():
-    app.run(host="0.0.0.0", port=8080)
+    app.run(host="0.0.0.0", port=8000)
 
 # Flask 백그라운드 실행
 threading.Thread(target=run_flask).start()

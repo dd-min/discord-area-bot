@@ -19,7 +19,6 @@ BOT_TOKEN = os.getenv("DISCORD_BOT_TOKEN")
 KOYEB_URL = os.getenv("KOYEB_URL")
 print("KOYEB_URL:", KOYEB_URL, type(KOYEB_URL))
 CHANNEL_ID = None
-OTHER_CHANNEL_ID = None
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -410,21 +409,6 @@ async def set_channel(interaction: discord.Interaction, channel: discord.TextCha
     CHANNEL_ID = channel.id
     await interaction.followup.send(f"✅ 오라클 메시지 채널이 **{channel.name}**로 설정되었습니다.", ephemeral=True)
 
-@tree.command(name="일반채널등록", description="일반 봇 메시지를 보낼 채널 지정")
-async def set_other_channel(interaction: discord.Interaction, channel: discord.TextChannel):
-    global OTHER_CHANNEL_ID
-    if not is_admin(interaction):
-        await interaction.response.send_message("⚠️ 관리자 권한이 필요합니다.", ephemeral=True)
-        return
-
-    # ⏳ 즉시 응답 (타임아웃 방지)
-    await interaction.response.defer(ephemeral=True)
-    await asyncio.sleep(0.3)
-
-    OTHER_CHANNEL_ID = channel.id
-    await interaction.followup.send(f"✅ 일반 봇 메시지 채널이 **{channel.name}**로 설정되었습니다.", ephemeral=True)
-
-
 # -------------------
 # 자동 주차 오라클 생성
 # -------------------
@@ -436,7 +420,7 @@ async def weekly_oracle_task():
         return
 
    # 목요일 오전 10시 ~ 10시 10분
-    if now.weekday() == 3 and now.hour == 10 and 0 <= now.minute < 35:
+    if now.weekday() == 3 and now.hour == 10 and 0 <= now.minute < 59:
         # 이미 오늘 실행됐는지 체크
         if hasattr(weekly_oracle_task, "last_run_date"):
             if weekly_oracle_task.last_run_date == now.date():
@@ -459,7 +443,7 @@ async def on_message(message):
         return
     
     # 지정 채널에서만 적용
-    if message.channel.id in [CHANNEL_ID, OTHER_CHANNEL_ID]:
+    if message.channel.id == CHANNEL_ID:
         # Slash Command가 Interaction으로 처리되므로 일반 메시지만 삭제
         # 즉, 일반 텍스트라면 삭제
         if not message.content.startswith("/"):

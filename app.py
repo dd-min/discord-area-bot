@@ -440,6 +440,10 @@ async def hard_reset_cmd(interaction: discord.Interaction):
 
     msg = game.hard_reset()
 
+    # ⏳ 즉시 응답 (타임아웃 방지)
+    await interaction.response.defer(ephemeral=True)
+    await asyncio.sleep(0.3)
+
     if CHANNEL_ID is None:
         await interaction.followup.send("⚠️ 메시지 채널이 등록되지 않았습니다. `/채널등록` 명령어로 설정해주세요.", ephemeral=True)
         return

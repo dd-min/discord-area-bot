@@ -468,6 +468,10 @@ async def streak_summary(interaction: discord.Interaction):
         await interaction.response.send_message("⚠️ 관리자 권한이 필요합니다.", ephemeral=True)
         return
     
+     # ⏳ 작업 시간 확보
+    await interaction.response.defer(ephemeral=True) # ephemeral 제거 (공개 처리)
+    await asyncio.sleep(0.3)
+    
     msg = game.get_streak_summary()
     await interaction.followup.send(msg)
 

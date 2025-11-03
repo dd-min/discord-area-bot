@@ -131,32 +131,6 @@ def get_week_period(dt: datetime):
 
     return thursday.year, week_number, f"({fmt(start_date)} ~ {fmt(end_date)})"
 
-
-def get_streak_summary(self):
-    """모든 유저의 연승 기록 요약"""
-    if not self.user_data:
-        return "📊 현재 등록된 유저가 없습니다."
-
-    lines = ["🔥 **현재 연승 현황**"]
-
-    # 연승 내림차순 정렬
-    sorted_users = sorted(
-        self.user_data.items(),
-        key=lambda x: x[1].get("consec_win", 0),
-        reverse=True
-    )
-
-    for uid, data in sorted_users:
-        streak = data.get("consec_win", 0)
-        last_week = data.get("last_win_week", 0)
-        if streak > 0:
-            lines.append(f"- <@{uid}> : **{streak}연승** 🏆 (최근 {last_week}주차)")
-        else:
-            lines.append(f"- <@{uid}> : ❌ 0연승")
-
-    return "\n".join(lines)
-
-
 # -------------------
 # 오라클 게임 클래스
 # -------------------
@@ -358,6 +332,34 @@ class OracleGame:
             final = reward + sacred_used
             lines.append(f"- <@{uid}> | 시도횟수: {attempts} , 성수사용: {sacred_used} , 성수지급: {reward} // 💰 최종: {final:+}")
         return "\n".join(lines)
+    
+
+    # -------------------
+    # 연승 조회
+    # -------------------
+    def get_streak_summary(self):
+    
+        if not self.user_data:
+            return "📊 현재 등록된 유저가 없습니다."
+
+        lines = ["🔥 **현재 연승 현황**"]
+
+        # 연승 내림차순 정렬
+        sorted_users = sorted(
+            self.user_data.items(),
+            key=lambda x: x[1].get("consec_win", 0),
+            reverse=True
+        )
+
+        for uid, data in sorted_users:
+            streak = data.get("consec_win", 0)
+            last_week = data.get("last_win_week", 0)
+            if streak > 0:
+                lines.append(f"- <@{uid}> : **{streak}연승** 🏆 (최근 {last_week}주차)")
+            else:
+                lines.append(f"- <@{uid}> : ❌ 0연승")
+
+        return "\n".join(lines)
 
 # -------------------
 # 게임 객체
@@ -467,7 +469,7 @@ async def streak_summary(interaction: discord.Interaction):
         return
     
     msg = game.get_streak_summary()
-    await interaction.response.send_message(msg)
+    await interaction.followup.send(msg)
 
 # -------------------
 # 자동 주차 오라클 생성

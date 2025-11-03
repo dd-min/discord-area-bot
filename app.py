@@ -107,6 +107,31 @@ def get_year_week(dt: datetime):
     return dt.month, week_number
 
 # -------------------
+# 주차 계산 (매주 목요일 기준, n년 n주차 + 기간)
+# -------------------
+def get_week_period(dt: datetime):
+    # 이번 주 목요일
+    thursday = dt + timedelta(days=(3 - dt.weekday()) % 7)
+
+    # 올해 첫 번째 목요일
+    first_thursday = datetime(thursday.year, 1, 1)
+    while first_thursday.weekday() != 3:
+        first_thursday += timedelta(days=1)
+
+    # 몇 번째 주차인지
+    week_number = ((thursday - first_thursday).days // 7) + 1
+
+    # 주간 기간 계산 (금요일 ~ 목요일)
+    start_date = thursday - timedelta(days=6)
+    end_date = thursday
+
+    # 보기 좋은 날짜 포맷
+    def fmt(d):
+        return f"{d.month}월 {d.day}일"
+
+    return thursday.year, week_number, f"({fmt(start_date)} ~ {fmt(end_date)})"
+
+# -------------------
 # 오라클 게임 클래스
 # -------------------
 class OracleGame:
@@ -199,9 +224,9 @@ class OracleGame:
             user["can_sacred"] = False
             
 
-        now = datetime.now(timezone.utc) + timedelta(hours=9)  # KST 변환
-        month, week = get_year_week(now)
-        msg = f"📅 {month}월 {week}주차 당첨 오라클\n- **{self.current_oracle}**"
+        now = datetime.now(timezone.utc) + timedelta(hours=9)  # KST
+        year, week, period = get_week_period(now)
+        msg = f"📅 {year}년 {week}주차 {period}\n🎯 이번 주 오라클: **{self.current_oracle}**"
         return msg
 
     # -------------------
@@ -294,9 +319,12 @@ class OracleGame:
     # 결산
     # -------------------
     def summary(self):
-        now = datetime.now(timezone.utc) + timedelta(hours=9)  # KST 변환
-        month, week = get_year_week(now)
-        lines = [f"📅 {month}월 {week}주차 오라클\n- **{self.current_oracle}**", "\n**참여정보 결산**"]
+        now = datetime.now(timezone.utc) + timedelta(hours=9)
+        year, week, period = get_week_period(now)
+        lines = [
+            f"📅 {year}년 {week}주차 {period}\n- **{self.current_oracle}**",
+            "\n**참여정보 결산**"
+        ]
         for uid, data in self.user_data.items():
             attempts = data.get("attempts", 0)
             sacred_used = data.get("sacred_used", 0)

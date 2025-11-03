@@ -110,24 +110,22 @@ def get_year_week(dt: datetime):
 # 주차 계산 (매주 목요일 기준, n년 n주차 + 기간)
 # -------------------
 def get_week_period(dt: datetime):
-    # 이번 주 목요일
-    thursday = dt + timedelta(days=(3 - dt.weekday()) % 7)
+    # 오늘 기준 이번 주 목요일 계산
+    thursday = dt - timedelta(days=(dt.weekday() - 3) % 7)  # 이번 주 목요일
 
-    # 올해 첫 번째 목요일
-    first_thursday = datetime(thursday.year, 1, 1, tzinfo=timezone(timedelta(hours=9)))
-    while first_thursday.weekday() != 3:
-        first_thursday += timedelta(days=1)
-
-    # 몇 번째 주차인지
-    week_number = ((thursday - first_thursday).days // 7) + 1
-
-    # 주간 기간 계산 (목요일 ~ 다음주 수요일)
-    start_date = thursday  # 목요일 시작
-    end_date = thursday + timedelta(days=6)  # 다음주 수요일 종료
+    # 주간 기간: 목요일 ~ 다음주 수요일
+    start_date = thursday
+    end_date = thursday + timedelta(days=6)
 
     # 보기 좋은 날짜 포맷
     def fmt(d):
         return f"{d.month}월 {d.day}일"
+
+    # 주차 계산 (올해 첫 번째 목요일 기준)
+    first_thursday = datetime(thursday.year, 1, 1, tzinfo=timezone(timedelta(hours=9)))
+    while first_thursday.weekday() != 3:
+        first_thursday += timedelta(days=1)
+    week_number = ((thursday - first_thursday).days // 7) + 1
 
     return thursday.year, week_number, f"({fmt(start_date)} ~ {fmt(end_date)})"
 

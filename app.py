@@ -121,15 +121,16 @@ def get_week_period(dt: datetime):
     # 몇 번째 주차인지
     week_number = ((thursday - first_thursday).days // 7) + 1
 
-    # 주간 기간 계산 (금요일 ~ 목요일)
-    start_date = thursday - timedelta(days=6)
-    end_date = thursday
+    # 주간 기간 계산 (목요일 ~ 다음주 수요일)
+    start_date = thursday  # 목요일 시작
+    end_date = thursday + timedelta(days=6)  # 다음주 수요일 종료
 
     # 보기 좋은 날짜 포맷
     def fmt(d):
         return f"{d.month}월 {d.day}일"
 
     return thursday.year, week_number, f"({fmt(start_date)} ~ {fmt(end_date)})"
+
 
 # -------------------
 # 오라클 게임 클래스
@@ -438,13 +439,6 @@ async def hard_reset_cmd(interaction: discord.Interaction):
     if not is_admin(interaction):
         await interaction.response.send_message("⚠️ 관리자 권한이 필요합니다.", ephemeral=True)
         return
-
-    # defer는 선택 사항, 늦게 작업할 때만 사용
-    try:
-        await interaction.response.defer(ephemeral=True)
-    except discord.errors.NotFound:
-        # 이미 만료된 인터랙션이면 그냥 무시
-        pass
 
     msg = game.hard_reset()
 

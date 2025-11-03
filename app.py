@@ -434,6 +434,7 @@ async def summary_cmd(interaction: discord.Interaction):
 
 @tree.command(name="하드리셋", description="이번주 오라클 초기화 및 새 오라클 생성")
 async def hard_reset_cmd(interaction: discord.Interaction):
+    global CHANNEL_ID
     if not is_admin(interaction):
         await interaction.response.send_message("⚠️ 관리자 권한이 필요합니다.", ephemeral=True)
         return
@@ -444,8 +445,15 @@ async def hard_reset_cmd(interaction: discord.Interaction):
 
     msg = game.hard_reset()
 
+    if CHANNEL_ID is None:
+        await interaction.followup.send("⚠️ 메시지 채널이 등록되지 않았습니다. `/채널등록` 명령어로 설정해주세요.", ephemeral=True)
+        return
+
     channel = bot.get_channel(CHANNEL_ID)
-    # msg = game.hard_reset()
+    if channel is None:
+        await interaction.followup.send("⚠️ 채널을 찾을 수 없습니다. 봇이 해당 채널에 접근할 수 있는지 확인하세요.", ephemeral=True)
+        return
+
     await channel.send(msg)
 
     # ✅ 모든 사람이 볼 수 있게 일반 채팅으로 출력

@@ -131,6 +131,32 @@ def get_week_period(dt: datetime):
 
     return thursday.year, week_number, f"({fmt(start_date)} ~ {fmt(end_date)})"
 
+
+def get_streak_summary(self):
+    """모든 유저의 연승 기록 요약"""
+    if not self.user_data:
+        return "📊 현재 등록된 유저가 없습니다."
+
+    lines = ["🔥 **현재 연승 현황**"]
+
+    # 연승 내림차순 정렬
+    sorted_users = sorted(
+        self.user_data.items(),
+        key=lambda x: x[1].get("consec_win", 0),
+        reverse=True
+    )
+
+    for uid, data in sorted_users:
+        streak = data.get("consec_win", 0)
+        last_week = data.get("last_win_week", 0)
+        if streak > 0:
+            lines.append(f"- <@{uid}> : **{streak}연승** 🏆 (최근 {last_week}주차)")
+        else:
+            lines.append(f"- <@{uid}> : ❌ 0연승")
+
+    return "\n".join(lines)
+
+
 # -------------------
 # 오라클 게임 클래스
 # -------------------
@@ -433,6 +459,15 @@ async def set_channel(interaction: discord.Interaction, channel: discord.TextCha
 
     CHANNEL_ID = channel.id
     await interaction.followup.send(f"✅ 오라클 메시지 채널이 **{channel.name}**로 설정되었습니다.", ephemeral=True)
+
+@tree.command(name="연승조회", description="연승 횟수")
+async def streak_summary(interaction: discord.Interaction):
+    if not is_admin(interaction):
+        await interaction.response.send_message("⚠️ 관리자 권한이 필요합니다.", ephemeral=True)
+        return
+    
+    msg = game.get_streak_summary()
+    await interaction.response.send_message(msg)
 
 # -------------------
 # 자동 주차 오라클 생성

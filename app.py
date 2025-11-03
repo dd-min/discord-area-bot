@@ -444,8 +444,12 @@ async def hard_reset_cmd(interaction: discord.Interaction):
 
     msg = game.hard_reset()
 
+    channel = bot.get_channel(CHANNEL_ID)
+    # msg = game.hard_reset()
+    await channel.send(msg)
+
     # ✅ 모든 사람이 볼 수 있게 일반 채팅으로 출력
-    await interaction.followup.send(msg)
+    # await interaction.followup.send(msg)
 
 
 @tree.command(name="채널등록", description="오라클 메시지를 보낼 채널 지정")

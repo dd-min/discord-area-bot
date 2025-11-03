@@ -114,7 +114,7 @@ def get_week_period(dt: datetime):
     thursday = dt + timedelta(days=(3 - dt.weekday()) % 7)
 
     # 올해 첫 번째 목요일
-    first_thursday = datetime(thursday.year, 1, 1)
+    first_thursday = datetime(thursday.year, 1, 1, tzinfo=timezone(timedelta(hours=9)))
     while first_thursday.weekday() != 3:
         first_thursday += timedelta(days=1)
 
